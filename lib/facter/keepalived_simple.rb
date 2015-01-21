@@ -160,7 +160,7 @@ if not(ipfile.nil?) and File.exist?(ipfile)
 	if ipregexp.match(ip)
 
 		# TODO: replace with system-getifaddrs if i can get it working!
-		cmd = "/sbin/ip -o a show to #{ip} | /bin/awk '{print $2}'"
+		cmd = "/sbin/ip -o a show to #{ip} | /usr/bin/awk '{print $2}'"
 		interface = `#{cmd}`.strip
 		if $?.exitstatus == 0 and interface.length > 0
 
