@@ -47,8 +47,6 @@ define keepalived::vrrp(
 		fail("A valid routerid is required for the keepalived::vrrp[${name}] definition.")
 	}
 
-	$FW = '$FW'			# make using $FW in shorewall easier
-
 	$conntrackd = $keepalived::conntrackd
 	$bool_shorewall = $shorewall ? {
 		true => true,				# force enable
@@ -106,8 +104,8 @@ define keepalived::vrrp(
 
 	if $bool_shorewall and ( "${valid_shorewall_zone}" != '' ) {
 		shorewall::rule { "vrrp-${name}": rule => "
-		VRRP/ACCEPT    $FW    ${valid_shorewall_zone}
-		VRRP/ACCEPT    ${valid_shorewall_zone}${valid_shorewall_ipaddress}    $FW
+		VRRP/ACCEPT    \$FW    ${valid_shorewall_zone}
+		VRRP/ACCEPT    ${valid_shorewall_zone}${valid_shorewall_ipaddress}    \$FW
 		", ensure => $ensure, comment => 'Allow VRRP traffic.'}
 	}
 
