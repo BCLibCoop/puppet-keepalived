@@ -61,7 +61,7 @@ define keepalived::vrrp(
 		content => template('keepalived/keepalived.vrrp.erb'),
 		owner => root,
 		group => nobody,
-		mode => 600,		# u=rw
+		mode => '0600',		# u=rw
 		ensure => $ensure,
 		notify => Service['keepalived'],	# this seems to work!
 		# NOTE: add unnecessary alias names so that if one of those
@@ -75,7 +75,7 @@ define keepalived::vrrp(
 		content => "${name}\n",
 		owner => root,
 		group => nobody,
-		mode => 600,		# u=rw
+		mode => '0600',		# u=rw
 		ensure => $ensure,
 		notify => Service['keepalived'],
 		require => File['/etc/keepalived/'],

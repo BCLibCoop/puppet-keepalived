@@ -29,7 +29,7 @@ define keepalived::vrrp_script(
 		content => template('keepalived/keepalived.script.erb'),
 		owner => root,
 		group => nobody,
-		mode => 600,		# u=rw
+		mode => '0600',		# u=rw
 		ensure => present,
 		notify => Service['keepalived'],
 	}

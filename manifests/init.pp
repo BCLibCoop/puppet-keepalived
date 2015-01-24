@@ -45,7 +45,7 @@ class keepalived (
 		force => true,			# also purge subdirs and links
 		owner => root,
 		group => root,
-		mode => 644,			# u=rwx,go=rx
+		mode => '0644',			# u=rwx,go=rx
 		notify => Service['keepalived'],
 		require => Package['keepalived'],
 	}
@@ -57,7 +57,7 @@ class keepalived (
 		force => true,			# also purge subdirs and links
 		owner => root,
 		group => root,
-		mode => 644,			# u=rwx,go=rx
+		mode => '0644',			# u=rwx,go=rx
 		#notify => Service['keepalived'],
 		require => File['/etc/keepalived/'],
 	}
@@ -66,7 +66,7 @@ class keepalived (
 		content => template('keepalived/keepalived.conf.erb'),
 		owner => root,
 		group => root,
-		mode => 600,		# u=rw
+		mode => '0600',		# u=rw
 		ensure => present,
 		notify => Service['keepalived'],
 	}

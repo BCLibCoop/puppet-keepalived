@@ -66,7 +66,7 @@ class keepalived::simple(	# TODO: turn into a type with $name as the group
 		content => "${valid_ip}\n",
 		owner => root,
 		group => root,
-		mode => 600,	# might as well...
+		mode => '0600',	# might as well...
 		ensure => present,
 		require => File["${vardir}/simple/"],
 	}
@@ -79,7 +79,7 @@ class keepalived::simple(	# TODO: turn into a type with $name as the group
 		},
 		owner => root,
 		group => root,
-		mode => 600,	# might as well...
+		mode => '0600',	# might as well...
 		ensure => present,
 		require => File["${vardir}/simple/"],
 	}
@@ -90,7 +90,7 @@ class keepalived::simple(	# TODO: turn into a type with $name as the group
 		tag => "keepalived_simple_${group}",
 		owner => root,
 		group => root,
-		mode => 600,
+		mode => '0600',
 		ensure => present,
 	}
 

@@ -31,7 +31,7 @@ define keepalived::group(
 		force => true,			# also purge subdirs and links
 		owner => root,
 		group => root,
-		mode => 644,			# u=rwx,go=rx
+		mode => '0644',			# u=rwx,go=rx
 		#notify => Service['keepalived'],
 		require => File['/etc/keepalived/groups/'],
 	}
@@ -43,7 +43,7 @@ define keepalived::group(
 		force => true,			# also purge subdirs and links
 		owner => root,
 		group => root,
-		mode => 644,			# u=rwx,go=rx
+		mode => '0644',			# u=rwx,go=rx
 		#notify => Service['keepalived'],
 		require => File["/etc/keepalived/groups/${name}/"],
 	}
@@ -53,7 +53,7 @@ define keepalived::group(
 		source => 'puppet:///modules/keepalived/notify.sh',
 		owner => root,
 		group => nobody,
-		mode => 700,		# u=rwx
+		mode => '0700',		# u=rwx
 		ensure => $runnotify ? {
 			false => absent,
 			default => present,
@@ -65,7 +65,7 @@ define keepalived::group(
 		content => template('keepalived/keepalived.group.erb'),
 		owner => root,
 		group => nobody,
-		mode => 600,		# u=rw
+		mode => '0600',		# u=rw
 		ensure => present,
 		notify => Service['keepalived'],
 	}

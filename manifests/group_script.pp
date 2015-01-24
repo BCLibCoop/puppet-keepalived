@@ -46,7 +46,7 @@ define keepalived::group_script(
 		},
 		owner => root,
 		group => nobody,
-		mode => 700,		# u=rwx
+		mode => '0700',		# u=rwx
 		#notify => Service['keepalived'],
 		require => [
 			Keepalived::Group["${group}"],
