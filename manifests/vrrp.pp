@@ -39,11 +39,11 @@ define keepalived::vrrp(
 ) {
         include keepalived
 
-        if ( "${password}" == '' ) {
+        if ( $password == '' ) {
                 fail("A valid password is required for the keepalived::vrrp[${name}] definition.")
         }
 
-        if ( "${routerid}" == '' ) {
+        if ( $routerid == '' ) {
                 fail("A valid routerid is required for the keepalived::vrrp[${name}] definition.")
         }
 
@@ -85,14 +85,14 @@ define keepalived::vrrp(
         $split = split($name, '_')      # eg: VI_NET
         $a = $split[0]                  # 'VI'
         $b = $split[1]                  # ZONE
-        $bool = (("${split[2]}" == '') and ("${a}_${b}" == "${name}") and ("${a}" == 'VI') and ("${b}" != ''))
+        $bool = (($split[2] == '') and ("${a}_${b}" == $name) and ($a == 'VI') and ($b != ''))
 
         $valid_shorewall_zone = $shorewall_zone ? {
                 '' => $bool ? {
                         true => inline_template('<%= @b.downcase %>'),
                         default => '',
                 },
-                default => "${shorewall_zone}", # pass through, user decides
+                default => $shorewall_zone, # pass through, user decides
         }
 
         # NOTE: there is only source, because dest is part of the vrrp protocol
@@ -102,7 +102,7 @@ define keepalived::vrrp(
                 default => ":${shorewall_ipaddress}",
         }
 
-        if $bool_shorewall and ( "${valid_shorewall_zone}" != '' ) {
+        if $bool_shorewall and ( $valid_shorewall_zone != '' ) {
                 shorewall::rule { "vrrp-${name}": rule => "
                 VRRP/ACCEPT    \$FW    ${valid_shorewall_zone}
                 VRRP/ACCEPT    ${valid_shorewall_zone}${valid_shorewall_ipaddress}    \$FW

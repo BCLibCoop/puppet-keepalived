@@ -38,14 +38,14 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
         #$group = "${name}"     # TODO
         $group = 'keepalived'
 
-        $valid_ip = "${ip}" ? {
-                '' => "${::keepalived_host_ip}" ? {     # smart fact...
-                        '' => "${::ipaddress}",         # puppet picks!
-                        default => "${::keepalived_host_ip}",   # smart
+        $valid_ip = $ip ? {
+                '' => $::keepalived_host_ip ? {     # smart fact...
+                        '' => $::ipaddress,         # puppet picks!
+                        default => $::keepalived_host_ip,   # smart
                 },
-                default => "${ip}",                     # user selected
+                default => $ip,                     # user selected
         }
-        if "${valid_ip}" == '' {
+        if $valid_ip == '' {
                 fail('No valid IP exists!')
         }
 
@@ -73,9 +73,9 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
 
         # NOTE: this is a tag to protect the pass file...
         file { "${vardir}/simple/pass":
-                content => "${password}" ? {
+                content => $password ? {
                         ''      => undef,
-                        default => "${password}",
+                        default => $password,
                 },
                 owner   => root,
                 group   => root,
@@ -98,24 +98,24 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
         }
 
         # this figures out the interface from the $valid_ip value
-        $if = "${::keepalived_simple_interface}"                # a smart fact!
-        $cidr = "${::keepalived_simple_cidr}"                   # even smarter!
-        $p = "${::keepalived_simple_password}"                  # combined fact
+        $if = $::keepalived_simple_interface                # a smart fact!
+        $cidr = $::keepalived_simple_cidr                   # even smarter!
+        $p = $::keepalived_simple_password                  # combined fact
         # this fact is sorted, which is very, very important...!
-        $fqdns_fact = "${::keepalived_simple_fqdns}"    # fact !
+        $fqdns_fact = $::keepalived_simple_fqdns    # fact !
         $fqdns = split($fqdns_fact, ',')                # list !
 
-        if "${if}" != '' and "${cidr}" != '' and "${p}" != '' {
+        if $if != '' and $cidr != '' and $p != '' {
 
                 $vrrpname = inline_template('<%= "VI_"+@group.upcase %>')       # eg: VI_LOC
-                keepalived::vrrp { "${vrrpname}":
-                        state               => "${fqdns[0]}" ? {      # first in list
+                keepalived::vrrp { $vrrpname:
+                        state               => $fqdns[0] ? {      # first in list
                                 ''      => 'MASTER',         # list is empty
                                 "${fqdn}"                                   => 'MASTER',  # we are first!
                                 default => 'BACKUP',    # other in list
                         },
-                        interface           => "${if}",
-                        mcastsrc            => "${valid_ip}",
+                        interface           => $if,
+                        mcastsrc            => $valid_ip,
                         # TODO: support configuring the label index!
                         # label ethX:1 for first VIP ethX:2 for second...
                         ipaddress           => "${vip}/${cidr} dev ${if} label ${if}:1",
@@ -123,20 +123,20 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
                         priority            => inline_template("<%= 255 - (@fqdns.index('${fqdn}') or 0) %>"),
                         routerid            => 42, # TODO: support configuring it!
                         advertint           => 3, # TODO: support configuring it!
-                        password            => "${p}",
+                        password            => $p,
                         group               => "keepalived_${group}",
-                        watchip             => "${vip}",
+                        watchip             => $vip,
                         shorewall_zone      => $shorewall ? {
                                 ''      => unset,
                                 false   => unset,
                                 'false' => unset,
-                                default => "${zone}",                           
+                                default => $zone,                           
                         },
                         shorewall_ipaddress => $shorewall ? {
                                 ''      => unset,
                                 false   => unset,
                                 'false' => unset,
-                                default => "${valid_ip}",
+                                default => $valid_ip,
                         },
                 }
         }

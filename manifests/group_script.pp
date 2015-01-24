@@ -30,8 +30,8 @@ define keepalived::group_script(
         #}
 
         $valid_name = $content ? {
-                '' => "${base}",
-                default => "${name}",
+                '' => $base,
+                default => $name,
         }
 
         file { "/etc/keepalived/groups/${group}/notify.d/${valid_name}.sh":
@@ -49,7 +49,7 @@ define keepalived::group_script(
                 mode    => '0700',         # u=rwx
                 #notify => Service['keepalived'],
                 require => [
-                        Keepalived::Group["${group}"],
+                        Keepalived::Group[$group],
                         File["/etc/keepalived/groups/${group}/notify.d/"],
                 ],
         }
