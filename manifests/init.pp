@@ -31,44 +31,44 @@ class keepalived (
         }
 
         service { 'keepalived':
-                enable => $start,               # start on boot
-                ensure => $ensure,              # ensures nothing if undef
-                hasstatus => true,              # use status command to monitor
+                enable     => $start,               # start on boot
+                ensure     => $ensure,              # ensures nothing if undef
+                hasstatus  => true,              # use status command to monitor
                 hasrestart => true,             # use restart, not start; stop
-                require => Package['keepalived'],
+                require    => Package['keepalived'],
         }
 
         file { '/etc/keepalived/':
-                ensure => directory,            # make sure this is a directory
+                ensure  => directory,            # make sure this is a directory
                 recurse => true,                # recursively manage directory
-                purge => true,                  # purge all unmanaged files
-                force => true,                  # also purge subdirs and links
-                owner => root,
-                group => root,
-                mode => '0644',                 # u=rwx,go=rx
-                notify => Service['keepalived'],
+                purge   => true,                  # purge all unmanaged files
+                force   => true,                  # also purge subdirs and links
+                owner   => root,
+                group   => root,
+                mode    => '0644',                 # u=rwx,go=rx
+                notify  => Service['keepalived'],
                 require => Package['keepalived'],
         }
 
         file { '/etc/keepalived/groups/':
-                ensure => directory,            # make sure this is a directory
+                ensure  => directory,            # make sure this is a directory
                 recurse => true,                # recursively manage directory
-                purge => true,                  # purge all unmanaged files
-                force => true,                  # also purge subdirs and links
-                owner => root,
-                group => root,
-                mode => '0644',                 # u=rwx,go=rx
+                purge   => true,                  # purge all unmanaged files
+                force   => true,                  # also purge subdirs and links
+                owner   => root,
+                group   => root,
+                mode    => '0644',                 # u=rwx,go=rx
                 #notify => Service['keepalived'],
                 require => File['/etc/keepalived/'],
         }
 
         file { '/etc/keepalived/keepalived.conf':
                 content => template('keepalived/keepalived.conf.erb'),
-                owner => root,
-                group => root,
-                mode => '0600',         # u=rw
-                ensure => present,
-                notify => Service['keepalived'],
+                owner   => root,
+                group   => root,
+                mode    => '0600',         # u=rw
+                ensure  => present,
+                notify  => Service['keepalived'],
         }
 
         # automatically create some empty groups for autogrouping

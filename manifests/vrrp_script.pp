@@ -27,11 +27,11 @@ define keepalived::vrrp_script(
 
         file { "/etc/keepalived/${name}.script":
                 content => template('keepalived/keepalived.script.erb'),
-                owner => root,
-                group => nobody,
-                mode => '0600',         # u=rw
-                ensure => present,
-                notify => Service['keepalived'],
+                owner   => root,
+                group   => nobody,
+                mode    => '0600',         # u=rw
+                ensure  => present,
+                notify  => Service['keepalived'],
         }
 }
 

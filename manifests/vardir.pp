@@ -24,14 +24,14 @@ class keepalived::vardir {      # module vardir snippet
                 $tmp = sprintf("%s/tmp/", regsubst($::puppet_vardir, '\/$', ''))
                 # base directory where puppet modules can work and namespace in
                 file { "${tmp}":
-                        ensure => directory,    # make sure this is a directory
+                        ensure  => directory,    # make sure this is a directory
                         recurse => false,       # don't recurse into directory
-                        purge => true,          # purge all unmanaged files
-                        force => true,          # also purge subdirs and links
-                        owner => root,
-                        group => nobody,
-                        mode => '0600',
-                        backup => false,        # don't backup to filebucket
+                        purge   => true,          # purge all unmanaged files
+                        force   => true,          # also purge subdirs and links
+                        owner   => root,
+                        group   => nobody,
+                        mode    => '0600',
+                        backup  => false,        # don't backup to filebucket
                         #before => File["${module_vardir}"],    # redundant
                         #require => Package['puppet'],  # no puppet module seen
                 }
@@ -40,11 +40,14 @@ class keepalived::vardir {      # module vardir snippet
         }
         $module_vardir = sprintf("%s/keepalived/", regsubst($tmp, '\/$', ''))
         file { "${module_vardir}":              # /var/lib/puppet/tmp/keepalived/
-                ensure => directory,            # make sure this is a directory
+                ensure  => directory,            # make sure this is a directory
                 recurse => true,                # recursively manage directory
-                purge => true,                  # purge all unmanaged files
-                force => true,                  # also purge subdirs and links
-                owner => root, group => nobody, mode => '0600', backup => false,
+                purge   => true,                  # purge all unmanaged files
+                force   => true,                  # also purge subdirs and links
+                owner   => root,
+                group   => nobody,
+                mode    => '0600',
+                backup  => false,
                 require => File["${tmp}"],      # File['/var/lib/puppet/tmp/']
         }
 }

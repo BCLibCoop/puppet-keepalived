@@ -25,25 +25,25 @@ define keepalived::group(
         $conntrackd = $keepalived::conntrackd
 
         file { "/etc/keepalived/groups/${name}/":
-                ensure => directory,            # make sure this is a directory
+                ensure  => directory,            # make sure this is a directory
                 recurse => true,                # recursively manage directory
-                purge => true,                  # purge all unmanaged files
-                force => true,                  # also purge subdirs and links
-                owner => root,
-                group => root,
-                mode => '0644',                 # u=rwx,go=rx
+                purge   => true,                  # purge all unmanaged files
+                force   => true,                  # also purge subdirs and links
+                owner   => root,
+                group   => root,
+                mode    => '0644',                 # u=rwx,go=rx
                 #notify => Service['keepalived'],
                 require => File['/etc/keepalived/groups/'],
         }
 
         file { "/etc/keepalived/groups/${name}/notify.d/":
-                ensure => directory,            # make sure this is a directory
+                ensure  => directory,            # make sure this is a directory
                 recurse => true,                # recursively manage directory
-                purge => true,                  # purge all unmanaged files
-                force => true,                  # also purge subdirs and links
-                owner => root,
-                group => root,
-                mode => '0644',                 # u=rwx,go=rx
+                purge   => true,                  # purge all unmanaged files
+                force   => true,                  # also purge subdirs and links
+                owner   => root,
+                group   => root,
+                mode    => '0644',                 # u=rwx,go=rx
                 #notify => Service['keepalived'],
                 require => File["/etc/keepalived/groups/${name}/"],
         }
@@ -51,11 +51,11 @@ define keepalived::group(
         # TODO: this could become a template if we want to add in some features
         file { "/etc/keepalived/groups/${name}/notify.sh":
                 source => 'puppet:///modules/keepalived/notify.sh',
-                owner => root,
-                group => nobody,
-                mode => '0700',         # u=rwx
+                owner  => root,
+                group  => nobody,
+                mode   => '0700',         # u=rwx
                 ensure => $runnotify ? {
-                        false => absent,
+                        false   => absent,
                         default => present,
                 },
                 #notify => Service['keepalived'],
@@ -63,11 +63,11 @@ define keepalived::group(
 
         file { "/etc/keepalived/${name}.group":
                 content => template('keepalived/keepalived.group.erb'),
-                owner => root,
-                group => nobody,
-                mode => '0600',         # u=rw
-                ensure => present,
-                notify => Service['keepalived'],
+                owner   => root,
+                group   => nobody,
+                mode    => '0600',         # u=rw
+                ensure  => present,
+                notify  => Service['keepalived'],
         }
 }
 

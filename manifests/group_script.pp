@@ -35,18 +35,18 @@ define keepalived::group_script(
         }
 
         file { "/etc/keepalived/groups/${group}/notify.d/${valid_name}.sh":
-                ensure => $ensure,
+                ensure  => $ensure,
                 content => $content ? {
-                        '' => undef,
+                        ''      => undef,
                         default => $content,
                 },
-                source => $content ? {
-                        '' => $name,    # eg: puppet:///files/keepalived/scripts/x.sh
+                source  => $content ? {
+                        ''      => $name,    # eg: puppet:///files/keepalived/scripts/x.sh
                         default => undef,
                 },
-                owner => root,
-                group => nobody,
-                mode => '0700',         # u=rwx
+                owner   => root,
+                group   => nobody,
+                mode    => '0700',         # u=rwx
                 #notify => Service['keepalived'],
                 require => [
                         Keepalived::Group["${group}"],

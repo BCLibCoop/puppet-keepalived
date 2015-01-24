@@ -30,7 +30,7 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
 
         # add this part too :)
         class { '::keepalived':
-                start => true,
+                start     => true,
                 shorewall => $shorewall,
         }
 
@@ -54,44 +54,44 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
         }
 
         file { "${vardir}/simple/":
-                ensure => directory,    # make sure this is a directory
+                ensure  => directory,    # make sure this is a directory
                 recurse => true,        # recurse into directory
-                purge => true,          # purge unmanaged files
-                force => true,          # purge subdirs and links
+                purge   => true,          # purge unmanaged files
+                force   => true,          # purge subdirs and links
                 require => File["${vardir}/"],
         }
 
         # store so that a fact can figure out the interface and cidr...
         file { "${vardir}/simple/ip":
                 content => "${valid_ip}\n",
-                owner => root,
-                group => root,
-                mode => '0600', # might as well...
-                ensure => present,
+                owner   => root,
+                group   => root,
+                mode    => '0600', # might as well...
+                ensure  => present,
                 require => File["${vardir}/simple/"],
         }
 
         # NOTE: this is a tag to protect the pass file...
         file { "${vardir}/simple/pass":
                 content => "${password}" ? {
-                        '' => undef,
+                        ''      => undef,
                         default => "${password}",
                 },
-                owner => root,
-                group => root,
-                mode => '0600', # might as well...
-                ensure => present,
+                owner   => root,
+                group   => root,
+                mode    => '0600', # might as well...
+                ensure  => present,
                 require => File["${vardir}/simple/"],
         }
 
         # NOTE: $name here should probably be the fqdn...
         @@file { "${vardir}/simple/pass_${fqdn}":
                 content => "${::keepalived_simple_pass}\n",
-                tag => "keepalived_simple_${group}",
-                owner => root,
-                group => root,
-                mode => '0600',
-                ensure => present,
+                tag     => "keepalived_simple_${group}",
+                owner   => root,
+                group   => root,
+                mode    => '0600',
+                ensure  => present,
         }
 
         File <<| tag == "keepalived_simple_${group}" |>> {      # collect to make facts
@@ -109,32 +109,32 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
 
                 $vrrpname = inline_template('<%= "VI_"+@group.upcase %>')       # eg: VI_LOC
                 keepalived::vrrp { "${vrrpname}":
-                        state => "${fqdns[0]}" ? {      # first in list
-                                '' => 'MASTER',         # list is empty
-                                "${fqdn}" => 'MASTER',  # we are first!
+                        state               => "${fqdns[0]}" ? {      # first in list
+                                ''      => 'MASTER',         # list is empty
+                                "${fqdn}"                                   => 'MASTER',  # we are first!
                                 default => 'BACKUP',    # other in list
                         },
-                        interface => "${if}",
-                        mcastsrc => "${valid_ip}",
+                        interface           => "${if}",
+                        mcastsrc            => "${valid_ip}",
                         # TODO: support configuring the label index!
                         # label ethX:1 for first VIP ethX:2 for second...
-                        ipaddress => "${vip}/${cidr} dev ${if} label ${if}:1",
+                        ipaddress           => "${vip}/${cidr} dev ${if} label ${if}:1",
                         # FIXME: this limits puppet-keepalived to 256 hosts maximum
-                        priority => inline_template("<%= 255 - (@fqdns.index('${fqdn}') or 0) %>"),
-                        routerid => 42, # TODO: support configuring it!
-                        advertint => 3, # TODO: support configuring it!
-                        password => "${p}",
-                        group => "keepalived_${group}",
-                        watchip => "${vip}",
-                        shorewall_zone => $shorewall ? {
-                                '' => unset,
-                                false => unset,
+                        priority            => inline_template("<%= 255 - (@fqdns.index('${fqdn}') or 0) %>"),
+                        routerid            => 42, # TODO: support configuring it!
+                        advertint           => 3, # TODO: support configuring it!
+                        password            => "${p}",
+                        group               => "keepalived_${group}",
+                        watchip             => "${vip}",
+                        shorewall_zone      => $shorewall ? {
+                                ''      => unset,
+                                false   => unset,
                                 'false' => unset,
                                 default => "${zone}",                           
                         },
                         shorewall_ipaddress => $shorewall ? {
-                                '' => unset,
-                                false => unset,
+                                ''      => unset,
+                                false   => unset,
                                 'false' => unset,
                                 default => "${valid_ip}",
                         },
