@@ -16,23 +16,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 define keepalived::vrrp_script(
-	$script,			# the script to run
-	$interval = 1,			# check every <N> seconds
-	# FIXME: these '-1' should actually be ints when puppet supports them
-	$rise = '-1',			# require <N> successes for OK
-	$fall = '-1',			# require <N> failures for KO
-	$weight = 0			# FIXME: this parameter currently unused
+        $script,                        # the script to run
+        $interval = 1,                  # check every <N> seconds
+        # FIXME: these '-1' should actually be ints when puppet supports them
+        $rise = '-1',                   # require <N> successes for OK
+        $fall = '-1',                   # require <N> failures for KO
+        $weight = 0                     # FIXME: this parameter currently unused
 ) {
-	include keepalived
+        include keepalived
 
-	file { "/etc/keepalived/${name}.script":
-		content => template('keepalived/keepalived.script.erb'),
-		owner => root,
-		group => nobody,
-		mode => '0600',		# u=rw
-		ensure => present,
-		notify => Service['keepalived'],
-	}
+        file { "/etc/keepalived/${name}.script":
+                content => template('keepalived/keepalived.script.erb'),
+                owner => root,
+                group => nobody,
+                mode => '0600',         # u=rw
+                ensure => present,
+                notify => Service['keepalived'],
+        }
 }
 
 # vim: ts=8
+# vim: set ft=puppet si sts=2 et tw=80 sw=2:

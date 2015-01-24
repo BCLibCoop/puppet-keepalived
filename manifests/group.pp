@@ -16,59 +16,60 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 define keepalived::group(
-	$vrrp = [],
-	$runnotify = true,		# run scripts in group/notify.d/ ?
-	$autogroup = false		# internal option, private or expert use
+        $vrrp = [],
+        $runnotify = true,              # run scripts in group/notify.d/ ?
+        $autogroup = false              # internal option, private or expert use
 ) {
-	include keepalived
+        include keepalived
 
-	$conntrackd = $keepalived::conntrackd
+        $conntrackd = $keepalived::conntrackd
 
-	file { "/etc/keepalived/groups/${name}/":
-		ensure => directory,		# make sure this is a directory
-		recurse => true,		# recursively manage directory
-		purge => true,			# purge all unmanaged files
-		force => true,			# also purge subdirs and links
-		owner => root,
-		group => root,
-		mode => '0644',			# u=rwx,go=rx
-		#notify => Service['keepalived'],
-		require => File['/etc/keepalived/groups/'],
-	}
+        file { "/etc/keepalived/groups/${name}/":
+                ensure => directory,            # make sure this is a directory
+                recurse => true,                # recursively manage directory
+                purge => true,                  # purge all unmanaged files
+                force => true,                  # also purge subdirs and links
+                owner => root,
+                group => root,
+                mode => '0644',                 # u=rwx,go=rx
+                #notify => Service['keepalived'],
+                require => File['/etc/keepalived/groups/'],
+        }
 
-	file { "/etc/keepalived/groups/${name}/notify.d/":
-		ensure => directory,		# make sure this is a directory
-		recurse => true,		# recursively manage directory
-		purge => true,			# purge all unmanaged files
-		force => true,			# also purge subdirs and links
-		owner => root,
-		group => root,
-		mode => '0644',			# u=rwx,go=rx
-		#notify => Service['keepalived'],
-		require => File["/etc/keepalived/groups/${name}/"],
-	}
+        file { "/etc/keepalived/groups/${name}/notify.d/":
+                ensure => directory,            # make sure this is a directory
+                recurse => true,                # recursively manage directory
+                purge => true,                  # purge all unmanaged files
+                force => true,                  # also purge subdirs and links
+                owner => root,
+                group => root,
+                mode => '0644',                 # u=rwx,go=rx
+                #notify => Service['keepalived'],
+                require => File["/etc/keepalived/groups/${name}/"],
+        }
 
-	# TODO: this could become a template if we want to add in some features
-	file { "/etc/keepalived/groups/${name}/notify.sh":
-		source => 'puppet:///modules/keepalived/notify.sh',
-		owner => root,
-		group => nobody,
-		mode => '0700',		# u=rwx
-		ensure => $runnotify ? {
-			false => absent,
-			default => present,
-		},
-		#notify => Service['keepalived'],
-	}
+        # TODO: this could become a template if we want to add in some features
+        file { "/etc/keepalived/groups/${name}/notify.sh":
+                source => 'puppet:///modules/keepalived/notify.sh',
+                owner => root,
+                group => nobody,
+                mode => '0700',         # u=rwx
+                ensure => $runnotify ? {
+                        false => absent,
+                        default => present,
+                },
+                #notify => Service['keepalived'],
+        }
 
-	file { "/etc/keepalived/${name}.group":
-		content => template('keepalived/keepalived.group.erb'),
-		owner => root,
-		group => nobody,
-		mode => '0600',		# u=rw
-		ensure => present,
-		notify => Service['keepalived'],
-	}
+        file { "/etc/keepalived/${name}.group":
+                content => template('keepalived/keepalived.group.erb'),
+                owner => root,
+                group => nobody,
+                mode => '0600',         # u=rw
+                ensure => present,
+                notify => Service['keepalived'],
+        }
 }
 
 # vim: ts=8
+# vim: set ft=puppet si sts=2 et tw=80 sw=2:

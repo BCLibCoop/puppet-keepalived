@@ -16,65 +16,66 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class keepalived (
-	$groups = ['default'],			# auto make these empty groups
-	$shorewall = true,			# generate shorewall vrrp rules
-	$conntrackd = false,			# enable conntrackd integration
-	$start = false				# start on boot and keep running
+        $groups = ['default'],                  # auto make these empty groups
+        $shorewall = true,                      # generate shorewall vrrp rules
+        $conntrackd = false,                    # enable conntrackd integration
+        $start = false                          # start on boot and keep running
 ) {
-	package { 'keepalived':
-		ensure => present,
-	}
+        package { 'keepalived':
+                ensure => present,
+        }
 
-	$ensure = $start ? {
-		true => running,
-		default => undef,		# we don't want ensure => stopped
-	}
+        $ensure = $start ? {
+                true => running,
+                default => undef,               # we don't want ensure => stopped
+        }
 
-	service { 'keepalived':
-		enable => $start,		# start on boot
-		ensure => $ensure,		# ensures nothing if undef
-		hasstatus => true,		# use status command to monitor
-		hasrestart => true,		# use restart, not start; stop
-		require => Package['keepalived'],
-	}
+        service { 'keepalived':
+                enable => $start,               # start on boot
+                ensure => $ensure,              # ensures nothing if undef
+                hasstatus => true,              # use status command to monitor
+                hasrestart => true,             # use restart, not start; stop
+                require => Package['keepalived'],
+        }
 
-	file { '/etc/keepalived/':
-		ensure => directory,		# make sure this is a directory
-		recurse => true,		# recursively manage directory
-		purge => true,			# purge all unmanaged files
-		force => true,			# also purge subdirs and links
-		owner => root,
-		group => root,
-		mode => '0644',			# u=rwx,go=rx
-		notify => Service['keepalived'],
-		require => Package['keepalived'],
-	}
+        file { '/etc/keepalived/':
+                ensure => directory,            # make sure this is a directory
+                recurse => true,                # recursively manage directory
+                purge => true,                  # purge all unmanaged files
+                force => true,                  # also purge subdirs and links
+                owner => root,
+                group => root,
+                mode => '0644',                 # u=rwx,go=rx
+                notify => Service['keepalived'],
+                require => Package['keepalived'],
+        }
 
-	file { '/etc/keepalived/groups/':
-		ensure => directory,		# make sure this is a directory
-		recurse => true,		# recursively manage directory
-		purge => true,			# purge all unmanaged files
-		force => true,			# also purge subdirs and links
-		owner => root,
-		group => root,
-		mode => '0644',			# u=rwx,go=rx
-		#notify => Service['keepalived'],
-		require => File['/etc/keepalived/'],
-	}
+        file { '/etc/keepalived/groups/':
+                ensure => directory,            # make sure this is a directory
+                recurse => true,                # recursively manage directory
+                purge => true,                  # purge all unmanaged files
+                force => true,                  # also purge subdirs and links
+                owner => root,
+                group => root,
+                mode => '0644',                 # u=rwx,go=rx
+                #notify => Service['keepalived'],
+                require => File['/etc/keepalived/'],
+        }
 
-	file { '/etc/keepalived/keepalived.conf':
-		content => template('keepalived/keepalived.conf.erb'),
-		owner => root,
-		group => root,
-		mode => '0600',		# u=rw
-		ensure => present,
-		notify => Service['keepalived'],
-	}
+        file { '/etc/keepalived/keepalived.conf':
+                content => template('keepalived/keepalived.conf.erb'),
+                owner => root,
+                group => root,
+                mode => '0600',         # u=rw
+                ensure => present,
+                notify => Service['keepalived'],
+        }
 
-	# automatically create some empty groups for autogrouping
-	keepalived::group { $groups:
-		autogroup => true,
-	}
+        # automatically create some empty groups for autogrouping
+        keepalived::group { $groups:
+                autogroup => true,
+        }
 }
 
 # vim: ts=8
+# vim: set ft=puppet si sts=2 et tw=80 sw=2:

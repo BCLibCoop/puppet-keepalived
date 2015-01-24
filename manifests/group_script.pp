@@ -17,42 +17,43 @@
 
 # NOTE: $name should be a path for $source as long as $content is empty.
 define keepalived::group_script(
-	$group,
-	$content = '',
-	$ensure = present
+        $group,
+        $content = '',
+        $ensure = present
 ) {
-	include keepalived
+        include keepalived
 
-	#if $content == '' {
-	# finds the file name in a complete path; eg: /tmp/dir/file => file
-	$file = regsubst($name, '(\/[\w.]+)*(\/)([\w.]+)', '\3')
-	$base = sprintf("%s", regsubst($file, '\.sh$', ''))	# rstrip any .sh
-	#}
+        #if $content == '' {
+        # finds the file name in a complete path; eg: /tmp/dir/file => file
+        $file = regsubst($name, '(\/[\w.]+)*(\/)([\w.]+)', '\3')
+        $base = sprintf("%s", regsubst($file, '\.sh$', ''))     # rstrip any .sh
+        #}
 
-	$valid_name = $content ? {
-		'' => "${base}",
-		default => "${name}",
-	}
+        $valid_name = $content ? {
+                '' => "${base}",
+                default => "${name}",
+        }
 
-	file { "/etc/keepalived/groups/${group}/notify.d/${valid_name}.sh":
-		ensure => $ensure,
-		content => $content ? {
-			'' => undef,
-			default => $content,
-		},
-		source => $content ? {
-			'' => $name,	# eg: puppet:///files/keepalived/scripts/x.sh
-			default => undef,
-		},
-		owner => root,
-		group => nobody,
-		mode => '0700',		# u=rwx
-		#notify => Service['keepalived'],
-		require => [
-			Keepalived::Group["${group}"],
-			File["/etc/keepalived/groups/${group}/notify.d/"],
-		],
-	}
+        file { "/etc/keepalived/groups/${group}/notify.d/${valid_name}.sh":
+                ensure => $ensure,
+                content => $content ? {
+                        '' => undef,
+                        default => $content,
+                },
+                source => $content ? {
+                        '' => $name,    # eg: puppet:///files/keepalived/scripts/x.sh
+                        default => undef,
+                },
+                owner => root,
+                group => nobody,
+                mode => '0700',         # u=rwx
+                #notify => Service['keepalived'],
+                require => [
+                        Keepalived::Group["${group}"],
+                        File["/etc/keepalived/groups/${group}/notify.d/"],
+                ],
+        }
 }
 
 # vim: ts=8
+# vim: set ft=puppet si sts=2 et tw=80 sw=2:
