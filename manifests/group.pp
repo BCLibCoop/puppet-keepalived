@@ -50,23 +50,23 @@ define keepalived::group(
 
         # TODO: this could become a template if we want to add in some features
         file { "/etc/keepalived/groups/${name}/notify.sh":
-                source => 'puppet:///modules/keepalived/notify.sh',
-                owner  => root,
-                group  => nobody,
-                mode   => '0700',         # u=rwx
                 ensure => $runnotify ? {
                         false   => absent,
                         default => present,
                 },
+                source => 'puppet:///modules/keepalived/notify.sh',
+                owner  => root,
+                group  => nobody,
+                mode   => '0700',         # u=rwx
                 #notify => Service['keepalived'],
         }
 
         file { "/etc/keepalived/${name}.group":
+                ensure  => present,
                 content => template('keepalived/keepalived.group.erb'),
                 owner   => root,
                 group   => nobody,
                 mode    => '0600',         # u=rw
-                ensure  => present,
                 notify  => Service['keepalived'],
         }
 }

@@ -58,11 +58,11 @@ define keepalived::vrrp(
         $instance = $name
 
         file { "/etc/keepalived/${instance}.vrrp":
+                ensure  => $ensure,
                 content => template('keepalived/keepalived.vrrp.erb'),
                 owner   => root,
                 group   => nobody,
                 mode    => '0600',         # u=rw
-                ensure  => $ensure,
                 notify  => Service['keepalived'],        # this seems to work!
                 # NOTE: add unnecessary alias names so that if one of those
                 # variables appears more than once, an error will be raised.
@@ -72,11 +72,11 @@ define keepalived::vrrp(
         # create a 'tag' of this object's name, to get picked up in the group
         # XXX: FIXME: TODO: it would be nice to compartmentalize this under /etc/keepalived/groups/ but i have to get a live system first to test: "include path/*.blah"
         file { "/etc/keepalived/${name}.${group}.vrrpname":
+                ensure  => $ensure,
                 content => "${name}\n",
                 owner   => root,
                 group   => nobody,
                 mode    => '0600',         # u=rw
-                ensure  => $ensure,
                 notify  => Service['keepalived'],
                 require => File['/etc/keepalived/'],
         }
@@ -134,11 +134,6 @@ define keepalived::vrrp(
         # good engineers, we periodically check if an expected vip isn't there,
         # (using ping) and reload keepalived to refresh the old interface list.
         cron { "keepalived-${instance}":
-                # the: > /dev/null 2>&1 disables email notifications from cron!
-                # only run a reload if the service is already started...        # XXX: test this new part...
-                command => "(/bin/ping -qc 1 ${valid_watchip} || (/sbin/service keepalived status && /sbin/service keepalived reload)) > /dev/null 2>&1",
-                user    => root,
-                minute  => '*/3',        # run every three minutes
                 ensure  => $valid_watchip ? {
                         ''      => absent,
                         default => $ensure ? {
@@ -146,6 +141,11 @@ define keepalived::vrrp(
                                 default => present,
                         },
                 },
+                # the: > /dev/null 2>&1 disables email notifications from cron!
+                # only run a reload if the service is already started...        # XXX: test this new part...
+                command => "(/bin/ping -qc 1 ${valid_watchip} || (/sbin/service keepalived status && /sbin/service keepalived reload)) > /dev/null 2>&1",
+                user    => root,
+                minute  => '*/3',        # run every three minutes
         }
 }
 

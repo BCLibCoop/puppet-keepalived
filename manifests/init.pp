@@ -31,8 +31,8 @@ class keepalived (
         }
 
         service { 'keepalived':
-                enable     => $start,               # start on boot
                 ensure     => $ensure,              # ensures nothing if undef
+                enable     => $start,               # start on boot
                 hasstatus  => true,              # use status command to monitor
                 hasrestart => true,             # use restart, not start; stop
                 require    => Package['keepalived'],
@@ -63,11 +63,11 @@ class keepalived (
         }
 
         file { '/etc/keepalived/keepalived.conf':
+                ensure  => present,
                 content => template('keepalived/keepalived.conf.erb'),
                 owner   => root,
                 group   => root,
                 mode    => '0600',         # u=rw
-                ensure  => present,
                 notify  => Service['keepalived'],
         }
 

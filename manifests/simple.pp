@@ -63,16 +63,17 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
 
         # store so that a fact can figure out the interface and cidr...
         file { "${vardir}/simple/ip":
+                ensure  => present,
                 content => "${valid_ip}\n",
                 owner   => root,
                 group   => root,
                 mode    => '0600', # might as well...
-                ensure  => present,
                 require => File["${vardir}/simple/"],
         }
 
         # NOTE: this is a tag to protect the pass file...
         file { "${vardir}/simple/pass":
+                ensure  => present,
                 content => $password ? {
                         ''      => undef,
                         default => $password,
@@ -80,18 +81,17 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
                 owner   => root,
                 group   => root,
                 mode    => '0600', # might as well...
-                ensure  => present,
                 require => File["${vardir}/simple/"],
         }
 
         # NOTE: $name here should probably be the fqdn...
         @@file { "${vardir}/simple/pass_${fqdn}":
+                ensure  => present,
                 content => "${::keepalived_simple_pass}\n",
                 tag     => "keepalived_simple_${group}",
                 owner   => root,
                 group   => root,
                 mode    => '0600',
-                ensure  => present,
         }
 
         File <<| tag == "keepalived_simple_${group}" |>> {      # collect to make facts
