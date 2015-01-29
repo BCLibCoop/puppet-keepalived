@@ -95,6 +95,7 @@ class keepalived::simple(       # TODO: turn into a type with $name as the group
         }
 
         File <<| tag == "keepalived_simple_${group}" |>> {      # collect to make facts
+          mode => '0600',
         }
 
         # this figures out the interface from the $valid_ip value
